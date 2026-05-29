@@ -308,9 +308,12 @@ html[data-heromotion="on"] .hero-mark__leg--r { animation: legbreath-r 6.5s var(
   color: #B9B0A0; max-width: 46ch;
 }
 
-/* The form card — light surface sitting on the dark band, so fields stay legible */
+/* The form card — light surface sitting on the dark band. Uses `--paper` (not
+   `--paper-bright`) so the `--paper-bright` field backgrounds inside pop as
+   distinct boxes against the card, matching how the form renders in the modal
+   (where the modal surface is also `--paper`). */
 .contact-card {
-  background: var(--paper-bright); color: var(--ink);
+  background: var(--paper); color: var(--ink);
   border: 1px solid var(--graphite-4); box-shadow: var(--shadow-lift);
   padding: clamp(24px, 2.6vw, 34px);
 }
