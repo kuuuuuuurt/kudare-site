@@ -1,0 +1,92 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import ContactModal from "../components/ContactModal.astro";
+import Swipe from "../components/Swipe.astro";
+---
+<Layout
+  title="404 — Kudare"
+  description="The page you were looking for isn't in the catalogue."
+>
+  <Nav mode="external" />
+
+  <section class="section nf">
+    <div class="wrap">
+      <div class="secmark" aria-hidden="true">
+        <span class="secmark__folio"><span class="secmark__tick"></span>§ 404</span>
+        <span class="secmark__label">Not in the catalogue</span>
+        <span class="secmark__rule"></span>
+        <span class="secmark__of nf__of">Off the map</span>
+      </div>
+
+      <div class="nf__body">
+        <span class="kick kick--accent">A wrong turn</span>
+        <h1 class="nf__head">
+          We don't keep this page in the <Swipe>catalogue</Swipe>.
+        </h1>
+        <p class="nf__lede">
+          The link was probably a guess, or the page moved. Either way, the
+          homepage is the place to start over.
+        </p>
+        <p class="nf__back">
+          <a class="btn btn--primary" href="/">
+            Back to the homepage <span class="ar">→</span>
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+  <ContactModal />
+</Layout>
+
+<style>
+  .nf { padding: clamp(72px, 10vw, 144px) 0 clamp(72px, 10vw, 144px); }
+  .nf__body { max-width: 32ch; }
+  .nf__head {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--t-h1);
+    line-height: 1.02;
+    letter-spacing: var(--tr-head);
+    margin: 14px 0 0;
+    text-wrap: balance;
+  }
+  .nf__lede {
+    font-family: var(--font-serif);
+    font-size: var(--t-lead);
+    color: var(--graphite-1);
+    margin: 28px 0 0;
+    max-width: 46ch;
+    line-height: 1.42;
+    text-wrap: pretty;
+  }
+  .nf__back { margin: 40px 0 0; }
+  /* Right side of the secmark — for the homepage it's "01 / 05"; on the
+     404 we use an editorial half-phrase instead of a count. Override to
+     keep it from running into the dashed rule. */
+  .nf__of { font-variant-numeric: normal; text-transform: uppercase; }
+</style>
+
+<script>
+  // Same swipe draw-on observer as the homepage, so the citron stroke on
+  // "catalogue" reveals as the page settles in.
+  const marks = Array.from(document.querySelectorAll<HTMLElement>(".swipe"));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) (e.target as HTMLElement).dataset.marked = "1";
+    });
+  }, { threshold: 0.2, rootMargin: "0px 0px -8% 0px" });
+  marks.forEach((m) => io.observe(m));
+  const seed = () => {
+    marks.forEach((m) => {
+      const r = m.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.9 && r.bottom > 0) {
+        m.dataset.marked = "1";
+      }
+    });
+  };
+  requestAnimationFrame(() => requestAnimationFrame(seed));
+</script>
