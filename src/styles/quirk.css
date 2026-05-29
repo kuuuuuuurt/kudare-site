@@ -311,8 +311,28 @@ html[data-heromotion="on"] .hero-mark__leg--r { animation: legbreath-r 6.5s var(
 /* The form card — light surface sitting on the dark band. Uses `--paper` (not
    `--paper-bright`) so the `--paper-bright` field backgrounds inside pop as
    distinct boxes against the card, matching how the form renders in the modal
-   (where the modal surface is also `--paper`). */
+   (where the modal surface is also `--paper`).
+
+   The Contact section wears `.on-ink` (so its own secmark + headings get the
+   dark-context palette), which flips `--hairline` to a translucent-paper
+   value designed for dark surfaces. This card is a LIGHT surface that just
+   happens to sit inside an .on-ink container, so we reset the semantic tokens
+   back to their light-context values for any descendant that reads them
+   (notably, the field borders). */
 .contact-card {
+  --bg: var(--paper);
+  --surface: var(--paper-bright);
+  --surface-sunk: var(--paper-2);
+  --fg: var(--ink);
+  --fg-strong: var(--ink);
+  --fg-muted: var(--graphite-2);
+  --fg-faint: var(--graphite-3);
+  --hairline: var(--graphite-4);
+  --hairline-soft: var(--graphite-5);
+  --link: var(--ink);
+  --link-hover: var(--citron-ink);
+  --accent-text: var(--citron-ink);
+
   background: var(--paper); color: var(--ink);
   border: 1px solid var(--graphite-4); box-shadow: var(--shadow-lift);
   padding: clamp(24px, 2.6vw, 34px);
