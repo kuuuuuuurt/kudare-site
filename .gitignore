@@ -14,6 +14,18 @@ npm-debug.log*
 # claude code — local-only settings (permissions, etc.)
 .claude/settings.local.json
 
+# internal / working docs — kept locally, not in the public repo
+Kudare_Messaging_and_Positioning.md
+README-case-studies.md
+
+# original design-reference: archival; the abandoned prototype branches
+# (specimen.* exploratory hero; tweaks-panel.jsx review tool) and the
+# handoff README are not relevant to anyone reading the production code.
+design-reference/README.md
+design-reference/specimen.css
+design-reference/specimen.jsx
+design-reference/tweaks-panel.jsx
+
 # misc
 .DS_Store
 *.log
