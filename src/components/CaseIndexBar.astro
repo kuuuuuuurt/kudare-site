@@ -1,0 +1,24 @@
+---
+import { CASES } from "../data/cases";
+
+interface Props {
+  currentSlug?: string;
+}
+const { currentSlug } = Astro.props;
+---
+<nav class="cs-index" aria-label="Case studies">
+  <div class="wrap cs-index__in">
+    <span class="cs-index__lbl">Case studies</span>
+    <div class="cs-index__list">
+      {CASES.map((c) => (
+        <a
+          class={c.slug === currentSlug ? "is-current" : undefined}
+          href={`/work/${c.slug}`}
+          aria-current={c.slug === currentSlug ? "page" : undefined}
+        >
+          <span class="n">{c.n}</span> {c.client}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>

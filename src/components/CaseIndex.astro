@@ -1,0 +1,47 @@
+---
+import SectionMark from "./SectionMark.astro";
+import { CASES } from "../data/cases";
+---
+<section class="section" id="work">
+  <div class="wrap">
+    <SectionMark folio="03" label="Case index" />
+    <div class="section__head">
+      <div>
+        <span class="kick">Selected work</span>
+        <h2 style="max-width: 34ch">What we've built for teams that couldn't afford to be wrong.</h2>
+      </div>
+      <span class="kick" style="white-space: nowrap">2019–2026</span>
+    </div>
+    <div class="cases">
+      {CASES.map((c) => {
+        const ready = c.caseStudyReady === true;
+        // Ready cases are real anchor links to /work/[slug]. Non-ready cases
+        // render the IDENTICAL hover treatment (citron band on the client name,
+        // arrow reveal, padding-lift, paper-bright background) so the section
+        // keeps its full visual rhythm — they're just not navigable yet.
+        return ready ? (
+          <a class="case" href={`/work/${c.slug}`}>
+            <span class="case__n">{c.n}</span>
+            <span class="case__client"><span class="mark-hover">{c.client}</span></span>
+            <span class="case__what">{c.whatHomepage}</span>
+            <span class="case__sector">{c.sector}<span class="case__arrow"> →</span></span>
+          </a>
+        ) : (
+          <div class="case case--coming">
+            <span class="case__n">{c.n}</span>
+            <span class="case__client"><span class="mark-hover">{c.client}</span></span>
+            <span class="case__what">{c.whatHomepage}</span>
+            <span class="case__sector">{c.sector}</span>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Non-ready cases share every hover animation with the ready ones; the only
+     adjustment is the cursor stays default since there's no destination yet.
+     Drop this rule the day every case has a detail page. */
+  .case--coming { cursor: default; }
+</style>

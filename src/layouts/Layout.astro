@@ -1,0 +1,49 @@
+---
+import "../styles/site.css";
+import "../styles/quirk.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Kudare — strategic intelligence & decision systems",
+  description = "An independent strategic consulting practice. We build the intelligence and decision systems senior leaders lean on when the wrong call gets expensive.",
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://kudare.co").toString();
+---
+
+<!doctype html>
+<html
+  lang="en"
+  data-folios="on"
+  data-grid="off"
+  data-marginalia="on"
+  data-animswipe="on"
+  data-heromotion="on"
+  data-ribbon="on"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1C1813" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/assets/kudare-mark.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content="/assets/kudare-mark.svg" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

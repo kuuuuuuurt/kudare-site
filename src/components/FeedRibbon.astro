@@ -1,0 +1,25 @@
+---
+const SERVICES = [
+  "Competitive landscape audits",
+  "Brand health tracking",
+  "Consumer and buyer segmentation",
+  "Market opportunity assessment",
+  "Voice-of-customer programs",
+  "Positioning and brand architecture",
+  "GTM playbooks",
+  "Competitive intelligence and battlecards",
+  "Crisis research, fast",
+  "Trend and cultural intelligence",
+];
+---
+<div class="feed" data-mode="services" role="marquee" aria-label="Kudare ribbon">
+  <div class="feed__track">
+    {[0, 1].map(() => (
+      SERVICES.map((p) => (
+        <span class="feed__item">
+          <span class="up">↑</span> {p}<span class="feed__sep">◆</span>
+        </span>
+      ))
+    ))}
+  </div>
+</div>

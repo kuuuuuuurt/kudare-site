@@ -1,0 +1,241 @@
+---
+import Wordmark from "./Wordmark.astro";
+
+type FootLink =
+  | string
+  | { label: string; href?: string; copy?: string };
+
+// Absolute paths (/#section) work from both the homepage and case pages.
+// From the homepage they're a same-page anchor jump; from a case page they
+// navigate back to the homepage and land at the right anchor.
+const FOOT_COLS: { h: string; links: FootLink[] }[] = [
+  {
+    h: "Practice",
+    links: [
+      { label: "Intelligence Systems",        href: "/#offerings" },
+      { label: "Decision Frameworks",         href: "/#offerings" },
+      { label: "High-Stakes Strategic Reads", href: "/#offerings" },
+      { label: "How we engage",               href: "/#contact"   },
+    ],
+  },
+  {
+    h: "Library",
+    links: [
+      { label: "Perspicacity",   href: "https://perspicacityy.substack.com/" },
+      { label: "Case studies",   href: "/#work"  },
+    ],
+  },
+  {
+    h: "Elsewhere",
+    links: [
+      { label: "LinkedIn",       href: "https://www.linkedin.com/company/kudare/" },
+      { label: "reckziegel.me",  href: "https://reckziegel.me/" },
+      { label: "info@kudare.co", copy: "info@kudare.co" },
+    ],
+  },
+];
+
+const normalize = (l: FootLink) =>
+  typeof l === "string" ? { label: l } : l;
+---
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__grid">
+      <div class="foot__brand">
+        <div class="row">
+          <img src="/assets/kudare-mark.svg" alt="Kudare" width="24" height="24" />
+          <Wordmark />
+        </div>
+        <p class="foot__tag">
+          The intelligence and systems companies use to make big <br />decisions confidently.
+        </p>
+      </div>
+      {FOOT_COLS.map((col) => (
+        <div class="foot__col">
+          <h5>{col.h}</h5>
+          {col.links.map((raw) => {
+            const l = normalize(raw);
+            if (l.copy) {
+              return (
+                <button
+                  type="button"
+                  class="foot__copy"
+                  data-copy={l.copy}
+                  aria-label={`Copy ${l.copy} to clipboard`}
+                >
+                  <span class="foot__copy-label">{l.label}</span>
+                  <span class="foot__copy-cue" aria-hidden="true">
+                    <span class="foot__copy-hint">click to copy</span>
+                    <span class="foot__copy-flash">Copied</span>
+                  </span>
+                </button>
+              );
+            }
+            if (l.href) {
+              const ext = /^https?:\/\//.test(l.href);
+              return (
+                <a
+                  href={l.href}
+                  target={ext ? "_blank" : undefined}
+                  rel={ext ? "noopener noreferrer" : undefined}
+                >
+                  {l.label}
+                </a>
+              );
+            }
+            return <a href="#" data-foot-link>{l.label}</a>;
+          })}
+        </div>
+      ))}
+    </div>
+    <div class="foot__base">
+      <span>© 2026 Kudare. All rights reserved.</span>
+      <span class="foot__pron">
+        koo·dare{" "}
+        <button type="button" class="pronounce" data-pronounce aria-label="Hear how Kudare is pronounced" title="Hear it">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4z"></path>
+            <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+            <path d="M19 5a9 9 0 0 1 0 14"></path>
+          </svg>
+        </button>
+        {" "}· independent strategic practice
+      </span>
+    </div>
+    <div class="sr-live" role="status" aria-live="polite"></div>
+  </div>
+</footer>
+
+<script>
+  // Footer links without a real destination stay inert.
+  document.querySelectorAll<HTMLAnchorElement>("[data-foot-link]").forEach((a) => {
+    a.addEventListener("click", (e) => e.preventDefault());
+  });
+
+  // Pronunciation: flip the button to the citron accent while speech plays;
+  // revert when the utterance ends or is cancelled. Web Speech API for now —
+  // swap for an <audio> clip when one exists.
+  document.querySelectorAll<HTMLButtonElement>("[data-pronounce]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      try {
+        const synth = window.speechSynthesis;
+        if (!synth) return;
+        synth.cancel();
+        const u = new SpeechSynthesisUtterance("koo dare");
+        u.rate = 0.85;
+        btn.classList.add("is-playing");
+        const clear = () => btn.classList.remove("is-playing");
+        u.onend = clear;
+        u.onerror = clear;
+        synth.speak(u);
+      } catch (e) { /* fail silently */ }
+    });
+  });
+
+  // Click-to-copy on any [data-copy] (currently: the contact email). Shows a
+  // brief citron "Copied" flash and announces to AT via the .sr-live region.
+  const liveRegion = document.querySelector<HTMLElement>(".sr-live");
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const text = btn.dataset.copy;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        // Clipboard API can fail in non-secure contexts. Fail quiet — the
+        // email is still readable on screen.
+        return;
+      }
+      btn.classList.add("is-copied");
+      if (liveRegion) liveRegion.textContent = "Copied to clipboard";
+      window.setTimeout(() => {
+        btn.classList.remove("is-copied");
+        if (liveRegion) liveRegion.textContent = "";
+      }, 1500);
+    });
+  });
+</script>
+
+<style>
+  /* Speaker icon, playing state — match the accent color so the user sees
+     audio is actively playing, revert when done. */
+  .pronounce.is-playing {
+    color: var(--citron-deep);
+  }
+
+  /* Click-to-copy email button. Matches the inert link styling in the
+     footer column so it doesn't stand out at rest. */
+  .foot__copy {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0 0 10px;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--graphite-1);
+    text-align: left;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .foot__copy:hover,
+  .foot__copy:focus-visible { color: var(--ink); }
+  .foot__copy:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--citron-tint);
+    border-radius: var(--r-1);
+  }
+  .foot__copy-label { display: inline-block; }
+
+  /* The hint and the flash share a slot — only one is visible at a time. */
+  .foot__copy-cue {
+    position: relative;
+    display: inline-block;
+    min-width: 5.5em;
+    line-height: 1;
+  }
+  .foot__copy-hint,
+  .foot__copy-flash {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .foot__copy-hint  { color: var(--graphite-3); }
+  .foot__copy-flash { color: var(--citron-ink); }
+
+  /* Hover/focus reveals the hint, unless we're showing the post-click flash. */
+  .foot__copy:hover .foot__copy-hint,
+  .foot__copy:focus-visible .foot__copy-hint {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+  .foot__copy.is-copied .foot__copy-hint { opacity: 0; }
+  .foot__copy.is-copied .foot__copy-flash {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  /* Visually hidden but read by assistive tech. */
+  .sr-live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

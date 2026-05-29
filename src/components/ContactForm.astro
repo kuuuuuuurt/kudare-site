@@ -1,0 +1,125 @@
+---
+const SERVICE_OPTS = [
+  "Intelligence Systems",
+  "Decision Frameworks",
+  "High-Stakes Strategic Read",
+  "A specific research project",
+  "Not sure yet",
+];
+
+const formspreeId = import.meta.env.PUBLIC_FORMSPREE_ID ?? "";
+const endpoint = formspreeId ? `https://formspree.io/f/${formspreeId}` : "";
+---
+<form class="contact-card contact-form" data-endpoint={endpoint} novalidate>
+  <div class="field">
+    <label for="cf-name">Name</label>
+    <input id="cf-name" name="name" type="text" placeholder="Your name" autocomplete="name" required />
+  </div>
+  <div class="field">
+    <label for="cf-email">Work email</label>
+    <input id="cf-email" name="email" type="email" placeholder="name@company.com" autocomplete="email" required />
+  </div>
+  <div class="field">
+    <label for="cf-service">What you're considering</label>
+    <select id="cf-service" name="service">
+      {SERVICE_OPTS.map((s) => <option value={s}>{s}</option>)}
+    </select>
+  </div>
+  <div class="field">
+    <label for="cf-decision">The decision in front of you</label>
+    <textarea id="cf-decision" name="decision" placeholder="A competitor just moved and we need to decide how to respond." required></textarea>
+  </div>
+  <label class="optin">
+    <input type="checkbox" name="optin" checked />
+    <span>Send me Perspicacity and the occasional market read. Monthly at most, and you can unsubscribe anytime.</span>
+  </label>
+
+  <!-- Formspree honeypot — bots fill this, humans don't. -->
+  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" aria-hidden="true" />
+  <input type="hidden" name="_subject" value="Kudare — new conversation" />
+
+  <button class="btn btn--primary contact-card__send" type="submit">
+    <span class="contact-card__send-label">Send it over</span>
+    <span class="ar">→</span>
+  </button>
+  <p class="contact-form__err" hidden role="alert"></p>
+</form>
+
+<template class="contact-form__done-template">
+  <div class="contact-card contact-card--done">
+    <img class="mk" src="/assets/kudare-mark.svg" alt="" width="48" height="48" />
+    <h3>Received.</h3>
+    <p>We read every note personally and reply within two working days. No autoresponder, no funnel.</p>
+  </div>
+</template>
+
+<script>
+  function showReceived(form: HTMLFormElement) {
+    const tpl = document.querySelector<HTMLTemplateElement>(".contact-form__done-template");
+    if (!tpl) return;
+    const done = tpl.content.firstElementChild?.cloneNode(true);
+    if (done && form.parentNode) {
+      form.parentNode.replaceChild(done as Node, form);
+    }
+  }
+
+  function handleSubmit(form: HTMLFormElement, e: SubmitEvent) {
+    e.preventDefault();
+    const endpoint = form.dataset.endpoint || "";
+    const errEl = form.querySelector<HTMLElement>(".contact-form__err");
+    const btn = form.querySelector<HTMLButtonElement>("button[type=submit]");
+    const label = form.querySelector<HTMLElement>(".contact-card__send-label");
+
+    if (errEl) { errEl.hidden = true; errEl.textContent = ""; }
+
+    // No backend configured — front-end demo behavior, still useful for previewing.
+    if (!endpoint) {
+      console.warn("[Kudare] PUBLIC_FORMSPREE_ID not set — showing front-end success state only.");
+      showReceived(form);
+      return;
+    }
+
+    if (btn) btn.disabled = true;
+    if (label) label.textContent = "Sending…";
+
+    const data = new FormData(form);
+    fetch(endpoint, {
+      method: "POST",
+      body: data,
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => {
+        if (res.ok) {
+          showReceived(form);
+        } else {
+          return res.json().then((j) => {
+            const msg = j?.errors?.map((x: any) => x.message).join(", ") || "Something went sideways. Please email info@kudare.co directly.";
+            if (errEl) { errEl.textContent = msg; errEl.hidden = false; }
+          }).catch(() => {
+            if (errEl) { errEl.textContent = "Something went sideways. Please email info@kudare.co directly."; errEl.hidden = false; }
+          });
+        }
+      })
+      .catch(() => {
+        if (errEl) { errEl.textContent = "Network error. Please email info@kudare.co directly."; errEl.hidden = false; }
+      })
+      .finally(() => {
+        if (btn) btn.disabled = false;
+        if (label) label.textContent = "Send it over";
+      });
+  }
+
+  document.querySelectorAll<HTMLFormElement>(".contact-form").forEach((form) => {
+    form.addEventListener("submit", (e) => handleSubmit(form, e));
+  });
+</script>
+
+<style>
+  .contact-form__err {
+    margin: 12px 0 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #B33A2E;
+    letter-spacing: 0.02em;
+  }
+</style>

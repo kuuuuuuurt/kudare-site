@@ -1,0 +1,132 @@
+---
+import Swipe from "./Swipe.astro";
+import type { Case } from "../data/cases";
+import { neighbors } from "../data/cases";
+
+interface Props {
+  caseData: Case;
+}
+const { caseData: c } = Astro.props;
+const { prev, next } = neighbors(c.slug);
+
+// Pullquote: split the text around the {{swipe}} marker so we can drop the
+// real <Swipe> component around the emphasis word in the middle.
+let quoteBefore = "";
+let quoteAfter = "";
+if (c.pullquote) {
+  const [b, a] = c.pullquote.text.split("{{swipe}}");
+  quoteBefore = b ?? "";
+  quoteAfter  = a ?? "";
+}
+---
+<main>
+  <!-- Header -->
+  <section class="cs-head">
+    <div class="wrap">
+      <div class="cs-reg">
+        <span><b>§ Case {c.n}</b></span>
+        <span>Selected work</span>
+        <span class="ln"></span>
+        <span>{c.year}</span>
+      </div>
+
+      <h1 class="cs-title">{c.client}</h1>
+      <p class="cs-stand lede">{c.standfirst}</p>
+      {c.illustrative && (
+        <p class="cs-illus">Illustrative template · replace copy, figures, and images with the selected engagement</p>
+      )}
+
+      <dl class="cs-meta">
+        <div><dt>Sector</dt><dd>{c.sector}</dd></div>
+        <div><dt>Engagement</dt><dd>{c.engagement}</dd></div>
+        <div><dt>Services</dt><dd>{c.services.join(" · ")}</dd></div>
+        <div><dt>Year</dt><dd>{c.year}</dd></div>
+      </dl>
+
+      <div class="ph cs-hero-img">[ Lead image or marked-up artifact ]</div>
+    </div>
+  </section>
+
+  <!-- Content blocks (renders in order: usually situation → what we did → [pullquote] → where it landed) -->
+  {c.blocks.map((block, i) => {
+    // The pullquote (if present) sits between block index 1 ("What we did")
+    // and block index 2 ("Where it landed"), matching the design-reference
+    // HTML's order. If a case has a different block count we still render
+    // every block; the pullquote is injected after blocks[1] when it exists.
+    const blockIdx = String(i + 1).padStart(2, "0");
+    return (
+      <>
+        <section class="cs-block">
+          <div class="wrap cs-grid">
+            <div class="cs-label"><span class="n">{blockIdx}</span><span class="t">{block.label}</span></div>
+            <div class="cs-body">
+              {block.body.map((p) => <p>{p}</p>)}
+              {block.methods && (
+                <ul class="cs-methods">
+                  {block.methods.map((m) => <li>{m}</li>)}
+                </ul>
+              )}
+              {block.stats && (
+                <div class="cs-stats">
+                  {block.stats.map((s) => (
+                    <div class="cs-stat"><div class="v">{s.v}</div><div class="k">{s.k}</div></div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+        {i === 1 && c.pullquote && (
+          <section class="cs-quote">
+            <div class="wrap">
+              <figure>
+                <blockquote>
+                  {quoteBefore}<Swipe>{c.pullquote.emphasis}</Swipe>{quoteAfter}
+                </blockquote>
+                {c.pullquote.caption && <figcaption>{c.pullquote.caption}</figcaption>}
+              </figure>
+            </div>
+          </section>
+        )}
+      </>
+    );
+  })}
+
+  <!-- Testimonial -->
+  {c.testimonial && (
+    <section class="cs-testimonial">
+      <div class="wrap">
+        <blockquote>
+          {c.testimonial.quote}
+          <cite>{c.testimonial.attribution}</cite>
+        </blockquote>
+      </div>
+    </section>
+  )}
+
+  <!-- CTA -->
+  <section class="cs-cta">
+    <div class="wrap">
+      <h2>Have a decision like this in front of you?</h2>
+      <button class="btn btn--primary" type="button" data-open-contact>Start a conversation <span class="ar">→</span></button>
+    </div>
+  </section>
+
+  <!-- Prev / next -->
+  {(prev || next) && (
+    <nav class="cs-nav wrap" aria-label="More work">
+      {prev && (
+        <a class="prev" href={`/work/${prev.slug}`}>
+          <span class="lab">← Previous</span>
+          <span class="name">{prev.client}</span>
+        </a>
+      )}
+      {next && (
+        <a class="next" href={`/work/${next.slug}`}>
+          <span class="lab">Next →</span>
+          <span class="name">{next.client}</span>
+        </a>
+      )}
+    </nav>
+  )}
+</main>

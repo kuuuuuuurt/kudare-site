@@ -1,0 +1,14 @@
+---
+interface Props {
+  folio: string;
+  label: string;
+  of?: string;
+}
+const { folio, label, of = "05" } = Astro.props;
+---
+<div class="secmark" aria-hidden="true">
+  <span class="secmark__folio"><span class="secmark__tick"></span>§ {folio}</span>
+  <span class="secmark__label">{label}</span>
+  <span class="secmark__rule"></span>
+  <span class="secmark__of">{folio} / {of}</span>
+</div>

@@ -1,0 +1,36 @@
+---
+import SectionMark from "./SectionMark.astro";
+import Swipe from "./Swipe.astro";
+import Marginalia from "./Marginalia.astro";
+---
+<section class="section" id="method" style="background: var(--paper-2)">
+  <div class="wrap">
+    <SectionMark folio="02" label="Methodology" />
+    <span class="kick kick--accent">The method</span>
+    <hr class="rule" style="margin: 16px 0 44px" />
+    <div class="method">
+      <blockquote class="method__quote">
+        Anyone can surface a finding. We carry it all the way into the <Swipe>decision</Swipe>.
+        <Marginalia tag="The standard" side="left" flow={true}>
+          We measure ourselves on what gets decided,<br />not on what gets delivered.
+        </Marginalia>
+      </blockquote>
+      <div class="method__body">
+        <p>
+          Most research stops when the deck gets sent. Surfacing the finding was never the
+          hard part. Getting it to the people deciding, in a form they can act on, is.
+        </p>
+        <p>
+          So we steward it the rest of the way. The right format, the right venue, the
+          right cadence, the right tone for whoever has to receive it. The insight does
+          more than get read: it becomes scaffolding in a decision you already knew you
+          faced, or it surfaces one you didn't.
+        </p>
+        <p>
+          When the analysis points somewhere uncomfortable, we'll say so. Conviction is
+          part of what you're paying for after all.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

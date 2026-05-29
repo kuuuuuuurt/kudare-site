@@ -1,0 +1,45 @@
+---
+import "../styles/casestudy.css";
+import Layout from "./Layout.astro";
+import Nav from "../components/Nav.astro";
+import CaseIndexBar from "../components/CaseIndexBar.astro";
+import Footer from "../components/Footer.astro";
+import ContactModal from "../components/ContactModal.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  currentSlug?: string;
+}
+const { title, description, currentSlug } = Astro.props;
+---
+<Layout title={title} description={description}>
+  <Nav mode="external" activeId="work" />
+  <CaseIndexBar currentSlug={currentSlug} />
+  <slot />
+  <Footer />
+  <ContactModal />
+</Layout>
+
+<script>
+  // Same swipe draw-on observer as the homepage. Released by an
+  // IntersectionObserver flipping `data-marked` on each .swipe element,
+  // which the CSS in quirk.css keys off to remove the clip-path.
+  const marks = Array.from(document.querySelectorAll<HTMLElement>(".swipe"));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) (e.target as HTMLElement).dataset.marked = "1";
+    });
+  }, { threshold: 0.2, rootMargin: "0px 0px -8% 0px" });
+  marks.forEach((m) => io.observe(m));
+  const seed = () => {
+    marks.forEach((m) => {
+      const r = m.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.9 && r.bottom > 0) {
+        m.dataset.marked = "1";
+      }
+    });
+  };
+  requestAnimationFrame(() => requestAnimationFrame(seed));
+</script>
+

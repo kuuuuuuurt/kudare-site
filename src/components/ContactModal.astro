@@ -1,0 +1,62 @@
+---
+import ContactForm from "./ContactForm.astro";
+---
+<div class="modal__scrim" data-modal-scrim hidden>
+  <div class="modal modal--contact" data-modal-body>
+    <div class="modal__top">
+      <div>
+        <span class="kick kick--accent">Start a conversation</span>
+        <h3>What decision are you facing?</h3>
+      </div>
+      <button class="modal__close" data-modal-close type="button">CLOSE ✕</button>
+    </div>
+    <ContactForm />
+  </div>
+</div>
+
+<script>
+  const scrim = document.querySelector<HTMLElement>("[data-modal-scrim]");
+  const body = document.querySelector<HTMLElement>("[data-modal-body]");
+  if (scrim && body) {
+    const open = () => {
+      scrim.hidden = false;
+      document.body.style.overflow = "hidden";
+      const firstField = scrim.querySelector<HTMLInputElement>("input, textarea, select");
+      firstField?.focus();
+    };
+    const close = () => {
+      scrim.hidden = true;
+      document.body.style.overflow = "";
+    };
+
+    window.addEventListener("kudare:open-contact", (e: Event) => {
+      // If the trigger passed an offering (clicked from the homepage's
+      // offerings ledger), preselect that option in the modal form.
+      const detail = (e as CustomEvent).detail as { offering?: string } | undefined;
+      const offering = detail?.offering;
+      if (offering) {
+        const select = scrim.querySelector<HTMLSelectElement>("select[name='service']");
+        if (select) {
+          const match = Array.from(select.options).find((o) => o.value === offering);
+          if (match) select.value = offering;
+        }
+      }
+      open();
+    });
+
+    scrim.addEventListener("click", (e) => {
+      if (e.target === scrim) close();
+    });
+    body.addEventListener("click", (e) => e.stopPropagation());
+    scrim.querySelectorAll<HTMLElement>("[data-modal-close]").forEach((el) => {
+      el.addEventListener("click", close);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !scrim.hidden) close();
+    });
+  }
+</script>
+
+<style is:global>
+  .modal__scrim[hidden] { display: none; }
+</style>

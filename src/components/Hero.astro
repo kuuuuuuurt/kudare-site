@@ -1,0 +1,42 @@
+---
+import Swipe from "./Swipe.astro";
+import HeroMark from "./HeroMark.astro";
+---
+<section class="hero" id="top">
+  <HeroMark />
+  <div class="wrap">
+    <div class="hero__kick">
+      <span class="kick kick--accent">Independent strategic practice</span>
+      <span class="kick">Est. 2019</span>
+    </div>
+    <h1 class="hero__head">
+      We inform the <Swipe>decisions</Swipe> you can't afford to get wrong.
+    </h1>
+    <p class="hero__lede">
+      Stop guessing on the tough stuff. We build the intelligence and decision
+      systems senior leaders lean on when the wrong call gets expensive.
+    </p>
+    <div class="hero__cta">
+      <button class="btn btn--primary" data-open-contact type="button">
+        Start a conversation <span class="ar">→</span>
+      </button>
+      <button class="btn btn--outline" data-nav="method" type="button">
+        See how we work
+      </button>
+    </div>
+    <div class="hero__meta">
+      <div class="item">
+        <span class="n">01</span>
+        <span class="l">Intelligence Systems,<br />always on</span>
+      </div>
+      <div class="item">
+        <span class="n">02</span>
+        <span class="l">Decision Frameworks that outlast the engagement</span>
+      </div>
+      <div class="item">
+        <span class="n">03</span>
+        <span class="l">Strategic Reads for the moments that matter</span>
+      </div>
+    </div>
+  </div>
+</section>

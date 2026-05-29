@@ -1,0 +1,32 @@
+---
+import SectionMark from "./SectionMark.astro";
+import Swipe from "./Swipe.astro";
+import ContactForm from "./ContactForm.astro";
+---
+<section class="cta" id="contact">
+  <div class="wrap">
+    <SectionMark folio="05" label="Start a conversation" />
+    <div class="cta__grid">
+      <div class="cta__pitch">
+        <h2 class="cta__head">
+          Instinct gets you most of the way. The big bets deserve a little <Swipe>more</Swipe>.
+        </h2>
+        <p class="cta__lead">
+          Tell us the decision in front of you. A real person reads every note and
+          replies within two working days.
+        </p>
+        <div class="engage">
+          <div class="engage__item">
+            <span class="engage__k">Ongoing partnership</span>
+            <span class="engage__d">An intelligence function on retainer: briefings on your cadence, and on-call support when a question can't wait.</span>
+          </div>
+          <div class="engage__item">
+            <span class="engage__k">Project</span>
+            <span class="engage__d">A defined question, scope, and timeline.<br />Most often where a relationship starts.</span>
+          </div>
+        </div>
+      </div>
+      <ContactForm />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,90 @@
+---
+import SectionMark from "./SectionMark.astro";
+
+// `offering` matches one of the <option> values in ContactForm's "What you're
+// considering" select. Clicking a ledger row passes this through the
+// kudare:open-contact event so the form opens with that option preselected.
+const OFFERINGS = [
+  {
+    idx: "01",
+    title: "Intelligence Systems",
+    offering: "Intelligence Systems",
+    body: "The always-on apparatus that keeps your team plugged into the market. We build the engine and run it, train you to run it, or both.",
+    list: [
+      "Brand health trackers across markets",
+      "Trend identification pipelines",
+      "Multi-agent AI market intelligence systems",
+      "Voice-of-customer programs",
+    ],
+  },
+  {
+    idx: "02",
+    title: "Decision Frameworks",
+    offering: "Decision Frameworks",
+    body: "Methodologies that turn a recurring strategic question into a repeatable answer. Bespoke, transferable, built to outlast the engagement.",
+    list: [
+      "Consumer and buyer segmentation",
+      "Product innovation frameworks",
+      "Positioning and brand architecture",
+      "GTM playbooks with decision logic",
+    ],
+  },
+  {
+    idx: "03",
+    title: "High-Stakes Strategic Reads",
+    offering: "High-Stakes Strategic Read",
+    body: "One-shot intelligence for pivotal moments,<br /> timed to the decision it informs.",
+    list: [
+      "Competitive landscape audits",
+      "Market opportunity assessments",
+      "Brand perception and impact studies",
+      "Customer journey mapping",
+    ],
+  },
+];
+---
+<section class="section" id="offerings">
+  <div class="wrap">
+    <SectionMark folio="01" label="Offerings" />
+    <div class="section__head">
+      <div>
+        <span class="kick">What we build</span>
+        <h2>Apparatus for the decisions that matter most.</h2>
+      </div>
+    </div>
+    <div class="ledger">
+      {OFFERINGS.map((o) => {
+        const isBreak = o.idx === "02";
+        const cls = "ledger-row" + (isBreak ? " ledger-row--break" : "");
+        return (
+          <div class={cls} data-open-contact data-offering={o.offering} role="button" tabindex="0">
+            <span class="ledger-row__idx">{o.idx}</span>
+            <div class="ledger-row__main">
+              <h3><span class="mark-hover">{o.title}</span></h3>
+              <p set:html={o.body}></p>
+            </div>
+            <ul class="ledger-row__list">
+              {o.list.map((l) => <li>{l}</li>)}
+            </ul>
+            <span class="ledger-row__more">Discuss a fit <span class="ar">→</span></span>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Keyboard support for ledger rows acting as buttons. Passes the offering
+  // string through so the form preselects the matching option (same as click).
+  document.querySelectorAll<HTMLElement>(".ledger-row[data-open-contact]").forEach((row) => {
+    row.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent("kudare:open-contact", {
+          detail: { offering: row.dataset.offering },
+        }));
+      }
+    });
+  });
+</script>

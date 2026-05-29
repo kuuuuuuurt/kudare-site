@@ -1,0 +1,49 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Hero from "../components/Hero.astro";
+import FeedRibbon from "../components/FeedRibbon.astro";
+import Offerings from "../components/Offerings.astro";
+import MethodPOV from "../components/MethodPOV.astro";
+import CaseIndex from "../components/CaseIndex.astro";
+import FieldNotes from "../components/FieldNotes.astro";
+import ContactCTA from "../components/ContactCTA.astro";
+import Footer from "../components/Footer.astro";
+import ContactModal from "../components/ContactModal.astro";
+---
+<Layout>
+  <div class="grid-overlay" aria-hidden="true"></div>
+  <Nav />
+  <Hero />
+  <FeedRibbon />
+  <Offerings />
+  <MethodPOV />
+  <CaseIndex />
+  <FieldNotes />
+  <ContactCTA />
+  <Footer />
+  <ContactModal />
+</Layout>
+
+<script>
+  // The swipe draws on as each mark enters view. IntersectionObserver flips a
+  // data-marked attr that the CSS keys off to release the clip-path.
+  const marks = Array.from(document.querySelectorAll<HTMLElement>(".swipe"));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) (e.target as HTMLElement).dataset.marked = "1";
+    });
+  }, { threshold: 0.2, rootMargin: "0px 0px -8% 0px" });
+  marks.forEach((m) => io.observe(m));
+
+  // Anything on screen at first paint also draws on.
+  const seed = () => {
+    marks.forEach((m) => {
+      const r = m.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.9 && r.bottom > 0) {
+        m.dataset.marked = "1";
+      }
+    });
+  };
+  requestAnimationFrame(() => requestAnimationFrame(seed));
+</script>

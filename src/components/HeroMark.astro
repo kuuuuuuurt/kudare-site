@@ -1,0 +1,38 @@
+---
+// The dividers/compass instrument, inline so its legs can breathe and the whole
+// body can tilt toward the cursor. CSS animations are gated on the data-heromotion
+// attribute set in Layout.astro.
+---
+<svg class="hero-mark" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+  <g class="hero-mark__rot">
+    <g stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <g class="hero-mark__leg hero-mark__leg--l">
+        <path d="M46 19 C39 44 28 64 20 85"></path>
+        <path d="M20 85 l-4 5" stroke-width="3.5"></path>
+      </g>
+      <g class="hero-mark__leg hero-mark__leg--r">
+        <path d="M50 19 C57 44 68 64 76 85"></path>
+        <path d="M76 85 l4 5" stroke-width="3.5"></path>
+      </g>
+      <path d="M48 5 L48 10.5" stroke-width="3.5"></path>
+    </g>
+    <circle cx="48" cy="15" r="5.4" fill="var(--citron)" stroke="var(--ink)" stroke-width="3.5"></circle>
+  </g>
+</svg>
+
+<script>
+  const mark = document.querySelector<SVGSVGElement>(".hero-mark");
+  if (mark) {
+    let raf = 0;
+    const onMove = (e: MouseEvent) => {
+      if (document.documentElement.dataset.heromotion !== "on") return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const nx = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+        const tilt = (Math.max(-1, Math.min(1, nx)) * 6).toFixed(2);
+        mark.style.setProperty("--tilt", `${tilt}deg`);
+      });
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+  }
+</script>

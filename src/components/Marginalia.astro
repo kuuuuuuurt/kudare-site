@@ -1,0 +1,15 @@
+---
+interface Props {
+  tag?: string;
+  side?: "left" | "right";
+  flow?: boolean;
+  top?: string;
+}
+const { tag = "Ed. note", side = "right", flow = false, top } = Astro.props;
+const classes = ["marg", `marg--${side}`, flow ? "marg--flow" : null].filter(Boolean).join(" ");
+const style = top ? `top:${top}` : undefined;
+---
+<aside class={classes} style={style} aria-hidden="true">
+  <span class="marg__tag">{tag}</span>
+  <slot />
+</aside>

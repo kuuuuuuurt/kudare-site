@@ -1,0 +1,19 @@
+# build
+dist/
+.astro/
+
+# node
+node_modules/
+npm-debug.log*
+
+# env
+.env
+.env.local
+.env.*.local
+
+# claude code — local-only settings (permissions, etc.)
+.claude/settings.local.json
+
+# misc
+.DS_Store
+*.log

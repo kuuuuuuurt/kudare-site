@@ -1,0 +1,113 @@
+---
+import Wordmark from "./Wordmark.astro";
+
+interface Props {
+  // "home" = on the homepage. Internal links use "#section" + smooth-scroll +
+  // scroll-spy. "external" = on a case page or other non-home page. Internal
+  // links point back to "/#section" as real navigations, and one nav item
+  // can be forced active via `activeId`.
+  mode?: "home" | "external";
+  activeId?: string;
+}
+
+const { mode = "home", activeId } = Astro.props;
+const isHome = mode === "home";
+const homePrefix = isHome ? "" : "/";
+const brandHref = isHome ? "#top" : "/";
+
+const NAV_ITEMS = [
+  { id: "offerings", label: "What we build" },
+  { id: "method", label: "Method" },
+  { id: "work", label: "Case studies" },
+  { id: "notes", label: "Perspicacity" },
+];
+---
+<header class="nav">
+  <div class="wrap nav__in">
+    {isHome ? (
+      <a class="brand" href={brandHref} data-nav="top">
+        <img src="/assets/kudare-mark.svg" alt="Kudare" width="28" height="28" />
+        <Wordmark />
+      </a>
+    ) : (
+      <a class="brand" href={brandHref}>
+        <img src="/assets/kudare-mark.svg" alt="Kudare" width="28" height="28" />
+        <Wordmark />
+      </a>
+    )}
+    <nav class="nav__links">
+      {NAV_ITEMS.map((it) => (
+        isHome ? (
+          <a class="nav__link" href={`#${it.id}`} data-nav={it.id} data-nav-id={it.id}>{it.label}</a>
+        ) : (
+          <a
+            class={"nav__link" + (activeId === it.id ? " is-active" : "")}
+            href={`${homePrefix}#${it.id}`}
+          >{it.label}</a>
+        )
+      ))}
+    </nav>
+    <button class="btn btn--ink" data-open-contact type="button">
+      Start a conversation <span class="ar">→</span>
+    </button>
+  </div>
+</header>
+
+<script>
+  // Smooth-scroll nav, scroll-spy, and contact-modal triggering. The selectors
+  // only match elements that exist on the homepage (Nav in mode="home"), so on
+  // case pages this script is a harmless no-op.
+  const NAV_OFFSET = 72;
+  const TRACKED_IDS = ["offerings", "method", "work", "notes"];
+
+  function scrollToId(id: string) {
+    if (id === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    const el = document.getElementById(id);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
+    window.scrollTo({ top: y, behavior: "smooth" });
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-nav]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      scrollToId(el.dataset.nav!);
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>("[data-open-contact]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      // Some triggers (the offering ledger rows) carry a data-offering value
+      // that gets preselected in the form's "What you're considering" field.
+      const offering = el.dataset.offering;
+      window.dispatchEvent(new CustomEvent("kudare:open-contact", {
+        detail: offering ? { offering } : undefined,
+      }));
+    });
+  });
+
+  const links = new Map<string, HTMLElement>();
+  document.querySelectorAll<HTMLElement>("[data-nav-id]").forEach((el) => {
+    links.set(el.dataset.navId!, el);
+  });
+
+  function syncActive() {
+    if (links.size === 0) return; // not on the homepage
+    const mid = window.scrollY + window.innerHeight * 0.35;
+    let current = TRACKED_IDS[0];
+    for (const id of TRACKED_IDS) {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop <= mid) current = id;
+    }
+    links.forEach((el, id) => {
+      el.classList.toggle("is-active", id === current);
+    });
+  }
+
+  window.addEventListener("scroll", syncActive, { passive: true });
+  syncActive();
+</script>

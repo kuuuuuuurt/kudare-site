@@ -1,0 +1,23 @@
+---
+import CaseLayout from "../../layouts/CaseLayout.astro";
+import CaseStudy from "../../components/CaseStudy.astro";
+import { READY_CASES } from "../../data/cases";
+
+export async function getStaticPaths() {
+  // Only the cases flagged caseStudyReady: true in src/data/cases.ts get a
+  // detail page. Today that filter is empty by design — flip a case's flag
+  // (and fill in its `blocks`) when its write-up is ready to publish.
+  return READY_CASES.map((c) => ({
+    params: { slug: c.slug },
+    props: { caseData: c },
+  }));
+}
+
+const { caseData } = Astro.props;
+
+const title = `${caseData.client} — Kudare`;
+const description = caseData.standfirst;
+---
+<CaseLayout title={title} description={description} currentSlug={caseData.slug}>
+  <CaseStudy caseData={caseData} />
+</CaseLayout>

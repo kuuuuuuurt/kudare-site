@@ -1,0 +1,369 @@
+/* =========================================================================
+   quirk.css — the five "marked-up document" moves, layered over site.css.
+   Everything is gated behind a data-attribute on <html> so each move can be
+   toggled independently from the Tweaks panel. Tokens come from the root DS.
+   ========================================================================= */
+
+/* Sections need a positioning context for folios, crop marks, marginalia. */
+.section, .hero, .cta { position: relative; }
+
+/* =========================================================================
+   MOVE 1a — Section register marks (mono folios / catalogue header)
+   "§ 02 · WHAT WE BUILD ········· 02 / 05". The apparatus, made visible.
+   ========================================================================= */
+.secmark { display: none; }
+html[data-folios="on"] .secmark {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: clamp(28px, 4vw, 52px);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--graphite-2);
+}
+.secmark__folio { color: var(--ink); font-weight: 600; white-space: nowrap; }
+.cta .secmark__folio { color: var(--paper-bright); }
+.secmark__label { color: var(--graphite-2); }
+.cta .secmark__label { color: var(--fg-muted); }
+.secmark__rule {
+  height: 0; border-top: 1px dashed var(--graphite-4);
+  align-self: center;
+}
+.cta .secmark__rule { border-top-color: rgba(244,240,232,0.28); }
+.secmark__of { color: var(--graphite-3); font-variant-numeric: tabular-nums; }
+.secmark__tick {
+  display: inline-block; width: 22px; height: 6px; background: var(--citron);
+  transform: rotate(-1.3deg); border-radius: 2px 5px 2px 6px; margin-right: 2px;
+}
+
+/* Crop / registration marks at the top corners of each marked section. */
+html[data-folios="on"] .section::before,
+html[data-folios="on"] .section::after,
+html[data-folios="on"] .cta::before,
+html[data-folios="on"] .cta::after {
+  content: ""; position: absolute; top: 0; width: 14px; height: 14px;
+  opacity: 0.5; pointer-events: none;
+}
+html[data-folios="on"] .section::before,
+html[data-folios="on"] .cta::before {
+  left: 14px; border-left: 1px solid var(--graphite-3); border-top: 1px solid var(--graphite-3);
+}
+html[data-folios="on"] .section::after,
+html[data-folios="on"] .cta::after {
+  right: 14px; border-right: 1px solid var(--graphite-3); border-top: 1px solid var(--graphite-3);
+}
+html[data-folios="on"] .cta::before,
+html[data-folios="on"] .cta::after { border-color: rgba(244,240,232,0.3); }
+
+/* =========================================================================
+   MOVE 1b — Baseline + column grid overlay (the registration grid)
+   ========================================================================= */
+.grid-overlay { display: none; }
+html[data-grid="on"] .grid-overlay {
+  display: block; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  /* horizontal baseline rhythm */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--graphite-3) 13%, transparent) 0 1px,
+    transparent 1px 32px
+  );
+}
+html[data-grid="on"] .grid-overlay::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: min(var(--maxw), calc(100% - 2 * var(--gutter)));
+  /* 12-column verticals */
+  background-image: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--graphite-3) 17%, transparent) 0 1px,
+    transparent 1px calc(100% / 12)
+  );
+}
+
+/* =========================================================================
+   MOVE 1c — Marginalia (editor's notes in the margin)
+   ========================================================================= */
+.marg { display: none; }
+html[data-marginalia="on"] .marg {
+  display: block; position: absolute; width: clamp(150px, 15vw, 196px);
+  font-family: var(--font-serif); font-style: italic; font-size: 14.5px;
+  line-height: 1.4; color: var(--graphite-1); text-wrap: pretty; z-index: 3;
+}
+.marg__tag {
+  display: block; font-family: var(--font-mono); font-style: normal;
+  font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--graphite-3); margin-bottom: 7px;
+}
+.marg__tag::before { content: "↳ "; color: var(--citron-ink); }
+.marg em { font-style: normal; font-weight: 500; color: var(--ink);
+  box-shadow: inset 0 -0.42em 0 var(--citron-tint); }
+/* faint hand connector from note toward the text it annotates */
+.marg--right { right: clamp(8px, 2vw, 24px); }
+.marg--left  { left: clamp(8px, 2vw, 24px); }
+/* Flow variant — sits in normal document flow inside its column. */
+html[data-marginalia="on"] .marg--flow {
+  position: static; width: auto; max-width: 34ch; margin: 26px 0 0;
+  padding-left: 16px; border-left: 2px solid var(--citron);
+}
+.cta .marg { color: var(--fg-muted); }
+.cta .marg em { color: var(--paper-bright); box-shadow: inset 0 -0.42em 0 rgba(200,204,28,0.22); }
+
+@media (max-width: 1180px) {
+  /* No room to hang notes off the column — fold them inline, indented. */
+  html[data-marginalia="on"] .marg {
+    position: static; width: auto; max-width: 52ch; margin: 26px 0 6px;
+    padding-left: 16px; border-left: 2px solid var(--citron);
+  }
+}
+
+/* =========================================================================
+   MOVE 2 — The swipe is a verb: draws on in view, travels on hover
+   ========================================================================= */
+html[data-animswipe="on"] .swipe__mark {
+  clip-path: inset(-18% 100% -18% -4%);
+  transition: clip-path var(--dur-slow) var(--ease);
+}
+html[data-animswipe="on"] .swipe[data-marked] .swipe__mark {
+  clip-path: inset(-18% -4% -18% -4%);
+}
+/* honor reduced motion — show the mark, skip the draw */
+@media (prefers-reduced-motion: reduce) {
+  html[data-animswipe="on"] .swipe__mark { transition: none; clip-path: none; }
+}
+
+/* Hover-travel highlight behind offering / case / ledger titles.
+   A real highlighter wipe: a citron band painted behind the text, grown on hover. */
+.mark-hover {
+  background-image: linear-gradient(var(--citron), var(--citron));
+  background-repeat: no-repeat;
+  background-position: 0 88%;
+  background-size: 0% 0.5em;
+  transition: background-size var(--dur) var(--ease);
+  padding: 0 0.04em; border-radius: 1px;
+}
+html[data-animswipe="on"] .offer:hover .mark-hover,
+html[data-animswipe="on"] .ledger-row:not(.ledger-row--break):hover .mark-hover,
+html[data-animswipe="on"] .case:hover .mark-hover { background-size: 100% 0.5em; }
+
+/* Dark break row: keep the light title legible — draw a citron underline instead. */
+.ledger-row--break .mark-hover {
+  background: none; position: relative; padding-bottom: 2px;
+}
+.ledger-row--break .mark-hover::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 3px;
+  background: var(--citron); transform: scaleX(0); transform-origin: left center;
+  transition: transform var(--dur) var(--ease);
+}
+html[data-animswipe="on"] .ledger-row--break:hover .mark-hover::after { transform: scaleX(1); }
+
+/* =========================================================================
+   MOVE 3 — Offerings as a ledger (index/catalogue), not three SaaS cards
+   ========================================================================= */
+.ledger { border-top: 2px solid var(--ink); }
+.ledger-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1.5fr) minmax(0, 1.1fr) 150px;
+  gap: clamp(20px, 3vw, 44px);
+  align-items: start;
+  padding: clamp(26px, 3vw, 40px) 8px;
+  border-bottom: 1px solid var(--hairline);
+  cursor: pointer; position: relative;
+  transition: background var(--dur) var(--ease), padding-left var(--dur) var(--ease);
+}
+.ledger-row:hover { background: var(--paper-bright); padding-left: 16px; }
+.ledger-row__idx {
+  font-family: var(--font-mono); font-size: 13px; color: var(--graphite-2);
+  letter-spacing: 0.06em; padding-top: 7px; font-variant-numeric: tabular-nums;
+}
+.ledger-row__main { display: flex; flex-direction: column; gap: 12px; }
+.ledger-row h3 {
+  font-family: var(--font-display); font-weight: 700; font-size: var(--t-h3);
+  letter-spacing: -0.02em; line-height: 1.02; margin: 0; align-self: flex-start;
+}
+.ledger-row p {
+  font-family: var(--font-serif); font-size: 16px; line-height: 1.5;
+  color: var(--graphite-1); margin: 0; max-width: 42ch;
+}
+.ledger-row__list { list-style: none; padding: 0; margin: 6px 0 0;
+  display: flex; flex-direction: column; gap: 9px; }
+.ledger-row__list li {
+  font-family: var(--font-display); font-size: 13.5px; font-weight: 500;
+  color: var(--graphite-1); padding-left: 18px; position: relative;
+}
+.ledger-row__list li::before {
+  content: ""; position: absolute; left: 0; top: 8px; width: 8px; height: 4px;
+  background: var(--citron); transform: rotate(-1.3deg); border-radius: 1px 3px 1px 3px;
+}
+.ledger-row__more {
+  font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--ink);
+  display: inline-flex; gap: 8px; align-items: center; white-space: nowrap; padding-top: 7px;
+  justify-self: end;
+}
+.ledger-row__more .ar { transition: transform var(--dur) var(--ease); }
+.ledger-row:hover .ledger-row__more .ar { transform: translateX(4px); }
+
+/* The one row allowed to break the grid — the "outlandish move" per page. */
+.ledger-row--break {
+  background: var(--ink); color: var(--paper-bright);
+  margin: 0 calc(-1 * clamp(12px, 2vw, 28px));
+  padding-left: clamp(20px, 3vw, 36px); padding-right: clamp(20px, 3vw, 36px);
+  border-bottom-color: var(--ink);
+}
+.ledger-row--break:hover { background: #000; padding-left: clamp(20px, 3vw, 36px); }
+.ledger-row--break .ledger-row__idx { color: var(--citron); }
+.ledger-row--break p { color: var(--fg-muted); }
+.ledger-row--break .ledger-row__list li { color: #C9C1B2; }
+.ledger-row--break .ledger-row__more { color: var(--citron); }
+.ledger-row--break .mark-hover::after { background: var(--citron); }
+
+@media (max-width: 760px) {
+  .ledger-row { grid-template-columns: 44px 1fr; gap: 14px; }
+  .ledger-row__list, .ledger-row__more { grid-column: 2; }
+  .ledger-row--break { margin: 0; }
+}
+
+/* =========================================================================
+   MOVE 4 — Intelligence feed ribbon (mono instrument readout, not a logo wall)
+   ========================================================================= */
+.feed { display: none; }
+html[data-ribbon="on"] .feed {
+  display: block; overflow: hidden; background: var(--ink);
+  border-block: 1px solid #000; position: relative;
+}
+.feed__track {
+  display: inline-flex; white-space: nowrap; will-change: transform;
+  animation: feed-scroll 46s linear infinite;
+}
+.feed:hover .feed__track { animation-play-state: paused; }
+.feed__item {
+  display: inline-flex; align-items: center; gap: 12px; padding: 11px 0;
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.13em;
+  text-transform: uppercase; color: #C9C1B2;
+}
+.feed__item b { color: var(--paper-bright); font-weight: 500; }
+.feed__item .up { color: var(--citron); }
+.feed__sep { color: var(--citron); margin: 0 26px; font-size: 9px; }
+@keyframes feed-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .feed__track { animation: none; } }
+
+/* =========================================================================
+   MOVE 5 — The dividers mark, animated. Leans toward the cursor (takes a
+   reading), legs breathe slowly. The hand at rest, never theatrical.
+   ========================================================================= */
+.hero-mark {
+  position: absolute; right: var(--gutter); top: clamp(40px, 6vw, 84px);
+  width: clamp(120px, 15vw, 220px); height: auto;
+  opacity: 0.14; pointer-events: none; overflow: visible;
+}
+.hero-mark__rot {
+  transform-box: fill-box; transform-origin: 50% 54%;
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 700ms var(--ease);
+}
+.hero-mark__leg { transform-box: fill-box; transform-origin: 48px 15px; }
+html[data-heromotion="on"] .hero-mark__leg--l { animation: legbreath-l 6.5s var(--ease-in-out) infinite; }
+html[data-heromotion="on"] .hero-mark__leg--r { animation: legbreath-r 6.5s var(--ease-in-out) infinite; }
+@keyframes legbreath-l { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-3.4deg); } }
+@keyframes legbreath-r { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(3.4deg); } }
+@media (prefers-reduced-motion: reduce) {
+  html[data-heromotion="on"] .hero-mark__leg { animation: none; }
+  .hero-mark__rot { transition: none; }
+}
+
+/* =========================================================================
+   CONTACT — the form lives inline in the closing section (no modal).
+   ========================================================================= */
+.cta__grid {
+  display: grid; grid-template-columns: 1fr minmax(380px, 0.85fr);
+  gap: clamp(32px, 5vw, 72px); align-items: start; margin-top: clamp(16px, 2vw, 28px);
+}
+.cta__pitch .cta__head {
+  font-size: var(--t-h2); line-height: 1.04; margin: 0;
+}
+.cta__lead {
+  font-family: var(--font-serif); font-size: var(--t-lead); line-height: 1.42;
+  color: #C9C1B2; margin: 22px 0 0; max-width: 40ch; text-wrap: pretty;
+}
+.engage { margin: 30px 0 0; display: flex; flex-direction: column; gap: 0; }
+.engage__item {
+  display: flex; flex-direction: column; gap: 6px; padding: 18px 0;
+  border-top: 1px solid rgba(244, 240, 232, 0.18);
+}
+.engage__item:last-child { border-bottom: 1px solid rgba(244, 240, 232, 0.18); }
+.engage__k {
+  font-family: var(--font-display); font-weight: 600; font-size: 16px;
+  letter-spacing: -0.01em; color: var(--paper-bright);
+}
+.engage__d {
+  font-family: var(--font-serif); font-size: 15px; line-height: 1.45;
+  color: #B9B0A0; max-width: 46ch;
+}
+
+/* The form card — light surface sitting on the dark band, so fields stay legible */
+.contact-card {
+  background: var(--paper-bright); color: var(--ink);
+  border: 1px solid var(--graphite-4); box-shadow: var(--shadow-lift);
+  padding: clamp(24px, 2.6vw, 34px);
+}
+.contact-card .field:last-of-type { margin-bottom: 14px; }
+.optin {
+  display: flex; gap: 11px; align-items: flex-start; cursor: pointer;
+  margin: 2px 0 20px;
+}
+.optin input {
+  appearance: none; -webkit-appearance: none; flex: none;
+  width: 17px; height: 17px; margin-top: 2px; border: 1.5px solid var(--graphite-3);
+  border-radius: var(--r-1); background: var(--paper); cursor: pointer;
+  display: grid; place-content: center; transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.optin input::after {
+  content: ""; width: 9px; height: 9px; transform: scale(0);
+  background: var(--ink); transition: transform var(--dur-fast) var(--ease);
+  clip-path: polygon(14% 52%, 0 66%, 40% 100%, 100% 22%, 86% 8%, 38% 70%);
+}
+.optin input:checked { background: var(--citron); border-color: var(--citron-deep); }
+.optin input:checked::after { transform: scale(1); }
+.optin input:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--citron-tint); }
+.optin span {
+  font-family: var(--font-serif); font-size: 14px; line-height: 1.4; color: var(--graphite-1);
+}
+.contact-card__send { width: 100%; justify-content: center; margin-top: 2px; }
+
+.contact-card--done {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; min-height: 340px;
+}
+.contact-card--done .mk { width: 48px; height: 48px; margin-bottom: 16px; }
+.contact-card--done h3 {
+  font-family: var(--font-display); font-weight: 700; font-size: 30px;
+  letter-spacing: -0.022em; margin: 0 0 10px;
+}
+.contact-card--done p {
+  font-family: var(--font-serif); font-size: 16px; line-height: 1.5;
+  color: var(--graphite-1); max-width: 38ch; margin: 0;
+}
+
+@media (max-width: 880px) {
+  .cta__grid { grid-template-columns: 1fr; gap: 30px; }
+}
+
+/* Pronunciation button in the footer baseline */
+.foot__pron { display: inline-flex; align-items: center; }
+.pronounce {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none; border: none; padding: 2px; margin: 0 3px; cursor: pointer;
+  color: var(--graphite-2); border-radius: var(--r-1);
+  transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.pronounce svg { display: block; }
+.pronounce:hover { color: var(--citron-ink); }
+.pronounce:active { color: var(--citron-deep); transform: scale(0.92); }
+.pronounce:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--citron-tint); }
+
+/* Contact form reused inside the popup modal — drop the card chrome (the modal
+   already provides surface, border, and shadow). */
+.modal--contact .contact-card { background: transparent; border: none; box-shadow: none; padding: 0; }
+.modal--contact .contact-card--done { min-height: 0; padding: 8px 0 4px; }
