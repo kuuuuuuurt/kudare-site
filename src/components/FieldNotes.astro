@@ -27,7 +27,7 @@ const fmtDate = (d: Date) => monthYear.format(d).toUpperCase().replace(" ", " ·
       {posts.map((nt) => (
         <a class="note-card" href={nt.url} target="_blank" rel="noopener noreferrer">
           <span class="note-card__fig">{fmtDate(nt.date)}</span>
-          <h4>{nt.title}</h4>
+          <h3 class="note-card__title">{nt.title}</h3>
           <p>{nt.excerpt}</p>
           <div class="note-card__foot">
             <span>{nt.readMinutes} min read</span>

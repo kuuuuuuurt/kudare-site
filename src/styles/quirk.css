@@ -33,7 +33,9 @@ html[data-folios="on"] .secmark {
   align-self: center;
 }
 .cta .secmark__rule { border-top-color: rgba(244,240,232,0.28); }
-.secmark__of { color: var(--graphite-3); font-variant-numeric: tabular-nums; }
+/* Use --fg-muted (not --graphite-2) so this auto-flips in .on-ink contexts
+   (the dark contact section) to a value with adequate contrast. */
+.secmark__of { color: var(--fg-muted); font-variant-numeric: tabular-nums; }
 .secmark__tick {
   display: inline-block; width: 22px; height: 6px; background: var(--citron);
   transform: rotate(-1.3deg); border-radius: 2px 5px 2px 6px; margin-right: 2px;
@@ -95,7 +97,7 @@ html[data-marginalia="on"] .marg {
 .marg__tag {
   display: block; font-family: var(--font-mono); font-style: normal;
   font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--graphite-3); margin-bottom: 7px;
+  color: var(--graphite-2); margin-bottom: 7px;
 }
 .marg__tag::before { content: "↳ "; color: var(--citron-ink); }
 .marg em { font-style: normal; font-weight: 500; color: var(--ink);
@@ -214,6 +216,10 @@ html[data-animswipe="on"] .ledger-row--break:hover .mark-hover::after { transfor
 }
 .ledger-row--break:hover { background: #000; padding-left: clamp(20px, 3vw, 36px); }
 .ledger-row--break .ledger-row__idx { color: var(--citron); }
+/* Override --fg-muted within the dark break row so the body paragraph gets a
+   light-on-dark color with adequate contrast (the row isn't .on-ink, so the
+   semantic tokens don't flip on their own). */
+.ledger-row--break { --fg-muted: #B9B0A0; }
 .ledger-row--break p { color: var(--fg-muted); }
 .ledger-row--break .ledger-row__list li { color: #C9C1B2; }
 .ledger-row--break .ledger-row__more { color: var(--citron); }

@@ -52,7 +52,7 @@ const normalize = (l: FootLink) =>
       </div>
       {FOOT_COLS.map((col) => (
         <div class="foot__col">
-          <h5>{col.h}</h5>
+          <h2 class="foot__col-h">{col.h}</h2>
           {col.links.map((raw) => {
             const l = normalize(raw);
             if (l.copy) {

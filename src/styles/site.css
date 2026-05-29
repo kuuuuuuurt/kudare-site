@@ -122,7 +122,7 @@ body {
   padding: 22px 8px; border-bottom: 1px solid var(--hairline); cursor: pointer; text-decoration: none; color: inherit;
   transition: padding var(--dur) var(--ease), background var(--dur) var(--ease); }
 .case:hover { background: var(--paper-bright); padding-left: 16px; }
-.case__n { font-family: var(--font-mono); font-size: 13px; color: var(--graphite-3); }
+.case__n { font-family: var(--font-mono); font-size: 13px; color: var(--graphite-2); }
 .case__client { font-family: var(--font-display); font-weight: 600; font-size: 23px; letter-spacing: -0.018em; }
 .case__what { font-family: var(--font-serif); font-size: 15px; color: var(--graphite-1); }
 .case__sector { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
@@ -140,7 +140,7 @@ body {
   display: flex; align-items: center; gap: 10px; }
 .note-card__fig::after { content: ""; width: 28px; height: 7px; background: var(--citron); transform: rotate(-1.3deg);
   border-radius: 2px 5px 2px 6px; }
-.note-card h4 { font-family: var(--font-serif); font-weight: 400; font-size: 23px; line-height: 1.15;
+.note-card h3, .note-card__title { font-family: var(--font-serif); font-weight: 400; font-size: 23px; line-height: 1.15;
   letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
 .note-card p { font-family: var(--font-serif); font-size: 15px; line-height: 1.5; color: var(--graphite-1); margin: 0; }
 .note-card__foot { margin-top: auto; font-family: var(--font-mono); font-size: 12px; color: var(--graphite-2); display: flex; gap: 10px; }
@@ -162,7 +162,7 @@ body {
 .foot__brand img { width: 24px; height: 24px; }
 .foot__brand .wordmark { font-size: 20px; }
 .foot__tag { font-family: var(--font-serif); font-size: 15px; color: var(--graphite-1); line-height: 1.5; max-width: 30ch; }
-.foot__col h5 { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+.foot__col h2, .foot__col-h { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--graphite-2); margin: 0 0 14px; font-weight: 500; }
 .foot__col a { display: block; font-family: var(--font-display); font-size: 14px; color: var(--graphite-1);
   text-decoration: none; margin-bottom: 10px; cursor: pointer; transition: color var(--dur-fast) var(--ease); }

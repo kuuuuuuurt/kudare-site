@@ -2,13 +2,19 @@
 import ContactForm from "./ContactForm.astro";
 ---
 <div class="modal__scrim" data-modal-scrim hidden>
-  <div class="modal modal--contact" data-modal-body>
+  <div
+    class="modal modal--contact"
+    data-modal-body
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="contact-modal-title"
+  >
     <div class="modal__top">
       <div>
         <span class="kick kick--accent">Start a conversation</span>
-        <h3>What decision are you facing?</h3>
+        <h3 id="contact-modal-title">What decision are you facing?</h3>
       </div>
-      <button class="modal__close" data-modal-close type="button">CLOSE ✕</button>
+      <button class="modal__close" data-modal-close type="button" aria-label="Close contact form">CLOSE ✕</button>
     </div>
     <ContactForm />
   </div>
