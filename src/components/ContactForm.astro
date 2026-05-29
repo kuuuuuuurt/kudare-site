@@ -1,4 +1,15 @@
 ---
+// `showHeader` adds an internal kicker + heading at the top of the form
+// card so the inline version (rendered in the dark Contact CTA section,
+// without an outer modal frame) has the same self-anchoring "Start a
+// conversation / What decision are you facing?" header as the modal.
+// The modal renders this header outside the form so it can sit alongside
+// the close button; it leaves showHeader at its default of false.
+interface Props {
+  showHeader?: boolean;
+}
+const { showHeader = false } = Astro.props;
+
 const SERVICE_OPTS = [
   "Intelligence Systems",
   "Decision Frameworks",
@@ -11,6 +22,12 @@ const formspreeId = import.meta.env.PUBLIC_FORMSPREE_ID ?? "";
 const endpoint = formspreeId ? `https://formspree.io/f/${formspreeId}` : "";
 ---
 <form class="contact-card contact-form" data-endpoint={endpoint} novalidate>
+  {showHeader && (
+    <div class="contact-form__header">
+      <span class="kick kick--accent">Start a conversation</span>
+      <h3 id="contact-form-title">What decision are you facing?</h3>
+    </div>
+  )}
   <div class="field">
     <label for="cf-name">Name</label>
     <input id="cf-name" name="name" type="text" placeholder="Your name" autocomplete="name" required />
@@ -121,5 +138,27 @@ const endpoint = formspreeId ? `https://formspree.io/f/${formspreeId}` : "";
     font-size: 12px;
     color: #B33A2E;
     letter-spacing: 0.02em;
+  }
+
+  /* The inline form's self-anchoring header — same words as the modal, sits
+     INSIDE the card so visitors landing here on mobile (where the form
+     appears below the pitch column) get an immediate "what is this card."
+     Hidden in modal contexts because the modal provides its own header
+     alongside the close button. */
+  .contact-form__header {
+    margin: 0 0 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .contact-form__header .kick { display: block; margin-bottom: 8px; }
+  .contact-form__header h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: -0.022em;
+    line-height: 1.06;
+    margin: 0;
+    color: var(--ink);
+    text-wrap: balance;
   }
 </style>
