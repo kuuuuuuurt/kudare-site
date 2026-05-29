@@ -46,7 +46,9 @@ import Swipe from "../components/Swipe.astro";
 
 <style>
   .nf { padding: clamp(72px, 10vw, 144px) 0 clamp(72px, 10vw, 144px); }
-  .nf__body { max-width: 32ch; }
+  /* The container is intentionally unconstrained — the headline and lede
+     each carry their own max-width in `ch` units relative to their own
+     font-size, so each block wraps at a sensible measure for its register. */
   .nf__head {
     font-family: var(--font-display);
     font-weight: 700;
@@ -54,6 +56,7 @@ import Swipe from "../components/Swipe.astro";
     line-height: 1.02;
     letter-spacing: var(--tr-head);
     margin: 14px 0 0;
+    max-width: 22ch;
     text-wrap: balance;
   }
   .nf__lede {
@@ -61,7 +64,7 @@ import Swipe from "../components/Swipe.astro";
     font-size: var(--t-lead);
     color: var(--graphite-1);
     margin: 28px 0 0;
-    max-width: 46ch;
+    max-width: 54ch;
     line-height: 1.42;
     text-wrap: pretty;
   }
